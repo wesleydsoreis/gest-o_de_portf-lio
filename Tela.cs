@@ -1,102 +1,73 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 public class Tela
 {
-
+    //
+    // propriedades
+    //
     private int largura;
     private int altura;
     private int colunaInicial;
     private int linhaInicial;
     private bool telaCheia;
 
-    private const char H = '═';
-    private const char V = '║';
-    private const char CSE = '╔';
-    private const char CIE = '╚';
-    private const char CSD = '╗';
-    private const char CID = '╝';
+    //
+    // métodos
+    //
+
+    // Constutor usado para "full screen"
     public Tela()
     {
-        this.largura = 87;
+        this.largura = 80;
         this.altura = 25;
         this.colunaInicial = 0;
         this.linhaInicial = 0;
         this.telaCheia = true;
     }
 
+    // construtor usado para telas menores
+    public Tela(int coluna, int linha, int largura, int altura)
+    {
+        this.largura = largura;
+        this.altura = altura;
+        this.colunaInicial = coluna;
+        this.linhaInicial = linha;
+        this.telaCheia = false;
+    }
+
+
     public void PrepararTela(string titulo = "")
     {
-        Console.Clear();
+        this.MontarMoldura(this.colunaInicial, this.linhaInicial, this.colunaInicial + this.largura, this.linhaInicial + this.altura);
 
-        MontarMoldura(this.colunaInicial, this.linhaInicial,
-                      this.colunaInicial + this.largura - 1,
-                      this.linhaInicial + this.altura - 1);
+        if (this.telaCheia)
+        {
+            this.MontarMoldura(this.colunaInicial, this.linhaInicial, this.colunaInicial + this.largura, this.linhaInicial + 2);
+            this.MontarMoldura(this.colunaInicial, this.linhaInicial + this.altura - 2, this.colunaInicial + this.largura, this.linhaInicial + this.altura);            
+        }
 
-        /*MontarMoldura(this.colunaInicial, this.linhaInicial,
-                      this.colunaInicial + this.largura - 1,
-                      this.linhaInicial + 2);*/
-
-        Centralizar(this.colunaInicial, this.colunaInicial + this.largura - 1, this.linhaInicial + 1, titulo);
+        this.Centralizar(this.colunaInicial, this.colunaInicial + this.largura, this.linhaInicial + 1, titulo);
     }
 
-    public string MostrarMenu(List<string> opcoes, int ci, int li)
-    {
-        int linha = li + 2;
 
-        if (opcoes.Count > 0)
+
+    public string MostrarMenu(List<string> ops, int ci, int li)
+    {
+        int cf, lf, linha;
+        cf = ci + ops[0].Length + 1;
+        lf = li + ops.Count + 2;
+        this.MontarMoldura(ci, li, cf, lf);
+        linha = li + 1;
+        for (int i = 0; i < ops.Count; i++)
         {
-            Centralizar(ci, this.colunaInicial + this.largura - 2, li + 1, opcoes[0]);
+            Console.SetCursorPosition(ci + 1, linha);
+            Console.Write(ops[i]);
             linha++;
         }
-
-        for (int i = 1; i < opcoes.Count; i++)
-        {
-            Console.SetCursorPosition(ci + 2, linha++);
-            Console.Write(opcoes[i]);
-        }
-
-    Console.SetCursorPosition(ci + 2, linha + 1);
-    Console.Write("Opção : ");
-    string? op = LerLinhaOuEsc();
-    return op == null ? "ESC" : op.Trim();
+        Console.SetCursorPosition(ci + 1, linha);
+        Console.Write("Opção : ");
+        string op = Console.ReadLine();
+        return op;
     }
 
-    public void MontarMoldura(int ci, int li, int cf, int lf)
-    {
-        if (cf <= ci || lf <= li) return;
-
-        for (int col = ci + 1; col < cf; col++)
-        {
-            Console.SetCursorPosition(col, li);
-            Console.Write(H);
-            Console.SetCursorPosition(col, lf);
-            Console.Write(H);
-        }
-
-        for (int lin = li + 1; lin < lf; lin++)
-        {
-            Console.SetCursorPosition(ci, lin);
-            Console.Write(V);
-            Console.SetCursorPosition(cf, lin);
-            Console.Write(V);
-        }
-
-        Console.SetCursorPosition(ci, li); Console.Write(CSE);
-        Console.SetCursorPosition(ci, lf); Console.Write(CIE);
-        Console.SetCursorPosition(cf, li); Console.Write(CSD);
-        Console.SetCursorPosition(cf, lf); Console.Write(CID);
-    }
-
-    public void ApagarArea(int ci, int li, int cf, int lf)
-    {
-        for (int linha = li; linha <= lf; linha++)
-        {
-            Console.SetCursorPosition(ci, linha);
-            Console.Write(new string(' ', Math.Max(0, cf - ci + 1)));
-        }
-    }
 
     public void Centralizar(int ci, int cf, int lin, string msg)
     {
@@ -105,72 +76,104 @@ public class Tela
         Console.Write(msg);
     }
 
-    public void MostrarMensagem(string msg)
+
+    public void ApagarArea(int ci, int li, int cf, int lf)
     {
-        int ci = this.colunaInicial;
-        int cf = this.colunaInicial + this.largura - 1;
-        int li = this.linhaInicial + this.altura - 3;
-        int lf = this.linhaInicial + this.altura - 1;
-
-        MontarMoldura(ci, li, cf, lf);
-
-        int linhaTexto = lf - 1;
-        int col = (this.largura - msg.Length) / 2 + this.colunaInicial;
-
-        ApagarArea(this.colunaInicial + 1, linhaTexto, this.colunaInicial + this.largura - 2, linhaTexto);
-        Console.SetCursorPosition(Math.Max(this.colunaInicial + 1, col), linhaTexto);
-        Console.Write(msg);
-    }
-    public string? LerLinhaOuEsc()
-{
-    var sb = new StringBuilder();
-
-    while (true)
-    {
-        var k = Console.ReadKey(intercept: true);
-
-        if (k.Key == ConsoleKey.Escape)
+        for (int coluna = ci; coluna <= cf; coluna++)
         {
-            return null;
-        }
-        else if (k.Key == ConsoleKey.Enter)
-        {
-            Console.WriteLine();
-            return sb.ToString();
-        }
-        else if (k.Key == ConsoleKey.Backspace)
-        {
-            if (sb.Length > 0)
+            for (int linha = li; linha <= lf; linha++)
             {
-                sb.Length--;
-                Console.Write("\b \b");
+                Console.SetCursorPosition(coluna, linha);
+                Console.Write(" ");
             }
         }
-        else if (!char.IsControl(k.KeyChar))
+    }
+
+
+    public void MontarMoldura(int ci, int li, int cf, int lf)
+    {
+        int col, lin;
+
+        this.ApagarArea(ci, li, cf, lf);
+
+        // desenha as linhas horizontais
+        for (col = ci; col < cf; col++)
         {
-            sb.Append(k.KeyChar);
-            Console.Write(k.KeyChar);
+            // linha horizontal superior
+            Console.SetCursorPosition(col, li);
+            Console.Write("═");
+            // linha horizontal inferior
+            Console.SetCursorPosition(col, lf);
+            Console.Write("═");
+        }
+
+        // desenha as linhas verticais
+        for (lin = li; lin < lf; lin++)
+        {
+            // desenha a linha vertical esquerda
+            Console.SetCursorPosition(ci, lin);
+            Console.Write("║");
+            // desenha a linha vertical direita
+            Console.SetCursorPosition(cf, lin);
+            Console.Write("║");
+        }
+
+        // desenha os cantos
+        Console.SetCursorPosition(ci, li);
+        Console.Write("╔");
+
+        Console.SetCursorPosition(ci, lf);
+        Console.Write("╚");
+
+        Console.SetCursorPosition(cf, li);
+        Console.Write("╗");
+
+        Console.SetCursorPosition(cf, lf);
+        Console.Write("╝");
+    }
+
+
+    public void MontarJanela(string titulo, List<string> dados, int coluna, int linha, int largura)
+    {
+        this.MontarMoldura(coluna, linha, coluna + largura, linha + dados.Count + 2);
+        this.Centralizar(coluna, coluna + largura, linha + 1, titulo);
+        linha += 2;
+        for (int i = 0; i < dados.Count; i++)
+        {
+            Console.SetCursorPosition(coluna+1, linha);
+            Console.Write(dados[i]);
+            linha++;
         }
     }
-}
-public void MostrarRodapePadrao()
-{
-    // A linha onde a mensagem será exibida é a penúltima (this.altura - 2), dentro da moldura.
-    int lin = this.linhaInicial + this.altura - 2; 
-    
-    // Define a mensagem
-    string msg = "Pressione ESC para voltar:"; 
-    
-    // CORREÇÃO: Alinha à esquerda com 2 espaços de margem interna.
-    int col = this.colunaInicial + 2; 
-    
-    // Limpa a área da linha onde a mensagem será exibida para evitar cortes.
-    // Garante que toda a largura interna da moldura seja limpa antes de escrever.
-    ApagarArea(this.colunaInicial + 1, lin, this.colunaInicial + this.largura - 2, lin);
 
-    // Posiciona e escreve a mensagem no canto inferior esquerdo
-    Console.SetCursorPosition(col, lin);
-    Console.Write(msg);
-}
+
+
+    public void MostrarMensagem(string msg)
+    {
+        this.ApagarArea(this.colunaInicial + 1, this.linhaInicial + this.altura - 1, this.colunaInicial + this.largura - 1, this.linhaInicial + this.altura - 1);
+        int coluna = (this.largura - msg.Length) / 2;
+        Console.SetCursorPosition(coluna, this.linhaInicial + this.altura - 1);
+        Console.Write(msg);
+    }
+
+
+
+    public void MostrarMensagem(int coluna, int linha, string msg)
+    {
+        Console.SetCursorPosition(coluna, linha);
+        Console.Write(msg);
+    }
+
+
+
+    public string Perguntar(string pergunta)
+    {
+        string resp = "";
+        this.MostrarMensagem(pergunta);
+        resp = Console.ReadLine();
+        return resp;
+    }
+
+
 
 }

@@ -2,90 +2,60 @@ using System;
 
 public class Projeto
 {
-    // ==========================
-    //   CAMPOS / PROPRIEDADES
-    // ==========================
-    public int id { get; set; }
-    public string nome { get; set; } = "";
-    public string gerente { get; set; } = "";
-    public string sponsor { get; set; } = "";
+    // Básicos
+    public int id;
+    public string nome;
+    public string gerente;
+    public string sponsor;
 
-    public decimal orcamentoAprovado { get; set; }  // R$
-    public decimal custoReal { get; set; }          // R$
+    // Custos e prazos
+    public decimal orcamentoAprovado;
+    public decimal custoReal;
+    public DateTime? prazoInicial;
+    public DateTime? novoPrazo;
+    public int progresso; // 0..100
 
-    public DateTime? prazoInicial { get; set; }
-    public DateTime? novoPrazo { get; set; }
+    // Critérios (ROI 0..100; demais 0..10)
+    public int roi;
+    public int risco;
+    public int alinhamento;
+    public int urgencia;
 
-    public int roi { get; set; }          // 0..100
-    public int risco { get; set; }        // 0..100 (maior = mais arriscado)
-    public int alinhamento { get; set; }  // 0..100
-    public int urgencia { get; set; }     // 0..100
+    // Derivados
+    public int score;        // 0..100
+    public string aprovacao; // "Apto"/"Não Apto"
+    public string status;    // "Em Análise"/"Em Execução"/"Encerrado"
 
-    public int score { get; set; }
-    public string aprovacao { get; set; } = "—";
-    public string status { get; set; } = "Em Análise";
-    public int progresso { get; set; }    // 0..100
-
-    // ==========================
-    //   MÉTODOS DE CÁLCULO
-    // ==========================
-
-    // Recalcula o score e a classificação de aprovação.
-    public void RecalcularScoreEAprovacao()
-{
-    // --- cálculo do score ---
-    score = (roi + (100 - risco) + alinhamento + urgencia) / 4;
-
-    // --- nível de aprovação ---
-    if (score >= 85)
-        aprovacao = "Alto";
-    else if (score >= 70)
-        aprovacao = "Médio";
-    else
-        aprovacao = "Baixo";
-
-    // --- definição automática de status ---
-    if (score >= 70)
-        status = "Aprovado";
-    else
-        status = "Em Análise";
-}
-
-
-    // Percentual de desvio de custo em relação ao orçamento aprovado.
-    // > 0 = acima do orçamento; < 0 = abaixo.
-    public double DesvioCustoPercentual()
+    public Projeto()
     {
-        if (orcamentoAprovado <= 0 || custoReal <= 0)
-            return 0;
-
-        return (double)(custoReal - orcamentoAprovado) / (double)orcamentoAprovado * 100.0;
+        this.nome = "";
+        this.gerente = "";
+        this.sponsor = "";
+        this.status = "Em Análise";
+        this.progresso = 0;
     }
 
-    // Texto amigável para o desvio de custo.
+    public void RecalcularScoreEAprovacao()
+    {
+        int roi10 = this.roi / 10; // normaliza ROI para base 0..10
+        this.score = (this.alinhamento * 2) + (roi10 * 3) + (this.urgencia * 3) + (this.risco * 2);
+        this.aprovacao = (this.score >= 70) ? "Apto" : "Não Apto";
+    }
+
     public string DesvioCustoTexto()
     {
-        double d = DesvioCustoPercentual();
-
-        if (Math.Abs(d) < 0.0001) return "Sem desvio";
-        if (d > 0)                 return $"+{d:0.0}% acima";
-        return $"{d:0.0}% abaixo";
+        if (orcamentoAprovado <= 0 || custoReal <= 0) return "";
+        decimal desvio = (custoReal - orcamentoAprovado) / orcamentoAprovado * 100m;
+        string sinal = desvio >= 0 ? "+" : "";
+        return sinal + Math.Round(desvio, 1) + "%";
     }
 
-    // Texto amigável para o desvio de prazo, comparando novoPrazo com prazoInicial.
     public string DesvioPrazoTexto()
     {
-        if (!prazoInicial.HasValue && !novoPrazo.HasValue)
-            return "Sem dados";
-
-        if (prazoInicial.HasValue && novoPrazo.HasValue)
-        {
-            int dias = (novoPrazo.Value.Date - prazoInicial.Value.Date).Days;
-            if (dias == 0) return "Dentro do prazo";
-            if (dias > 0)  return $"+{dias} dia(s) de atraso";
-            return $"{dias} dia(s) adiantado";
-        }
-
-        return "Sem dados";
+        if (!prazoInicial.HasValue || !novoPrazo.HasValue) return "";
+        int dias = (novoPrazo.Value - prazoInicial.Value).Days;
+        if (dias == 0) return "0 dia";
+        string sinal = dias > 0 ? "+" : "";
+        return sinal + Math.Abs(dias) + (Math.Abs(dias) == 1 ? " dia" : " dias");
     }
 }

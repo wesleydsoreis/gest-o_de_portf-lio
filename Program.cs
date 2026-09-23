@@ -6,160 +6,95 @@ Tela tela = new Tela();
 ProjetoCRUD projetoCRUD = new ProjetoCRUD(tela);
 RecursoCRUD recursoCRUD = new RecursoCRUD(tela);
 
-MostrarLogin();
-
-List<string> opcoes = new List<string>
+// ===== LOGIN rápido =====
+while (true)
 {
-    "Menu",
-    "1 - Cadastrar Projeto",
-    "2 - Exibir Projetos",
-    "3 - Dashboard de Projetos",
-    "4 - Fechamento Formal de Projeto",
-    "5 - Cadastrar Recurso",
-    "6 - Alocar Recurso",
-    "7 - Balanço de Utilização de Recursos",
-    "8 - Balanço Consolidado do Portfólio",
-    "0 - Sair"
-};
+    Console.Clear();
+    string barra = new string('═', 66);
+    Console.WriteLine("╔" + barra + "╗");
+    Console.WriteLine("║" + Centraliza("Project Portfolio Management", 66) + "║");
+    Console.WriteLine("║" + new string(' ', 66) + "║");
+    Console.Write("║ Informe seu usuário e senha:".PadRight(67) + "║\n");
+    Console.WriteLine("║" + new string(' ', 66) + "║");
+
+    Console.Write("║ Usuário: ".PadRight(67));
+    string usuario = Console.ReadLine();
+    Console.Write("║ Senha: ".PadRight(67));
+    string senha = Console.ReadLine();
+    Console.Write("║ Confirmar Dados?(S/N): ".PadRight(67));
+    string conf = Console.ReadLine() ?? "N";
+    Console.WriteLine("╚" + barra + "╝");
+
+    if (!string.IsNullOrWhiteSpace(usuario) && !string.IsNullOrWhiteSpace(senha)
+        && conf.Trim().ToUpper() == "S")
+        break;
+
+    // Usuário Inválido
+    Console.Clear();
+    Console.WriteLine("╔" + barra + "╗");
+    Console.WriteLine("║" + Centraliza("Project Portfolio Management", 66) + "║");
+    Console.WriteLine("║" + new string(' ', 66) + "║");
+    Console.WriteLine("║ Usuário ou senha incorretos. Informe Novamente:".PadRight(67) + "║");
+    Console.WriteLine("║" + new string(' ', 66) + "║");
+    Console.Write("║ Pressione uma tecla...".PadRight(67) + "║\n");
+    Console.WriteLine("╚" + barra + "╝");
+    Console.ReadKey();
+}
+
+// ===== MENU PRINCIPAL =====
+string opcao;
+List<string> opcoes = new List<string>();
+opcoes.Add("     Menu      ");
+opcoes.Add("1 - Cadastrar Projeto");
+opcoes.Add("2 - Exibir Projetos");
+opcoes.Add("3 - Dashboard de Projetos");
+opcoes.Add("4 - Fechamento Formal de Projeto");
+opcoes.Add("5 - Cadastrar Recurso");
+opcoes.Add("6 - Alocar Recurso");
+opcoes.Add("7 - Balanço de Utilização de Recursos");
+opcoes.Add("8 - Balanço Consolidado do Portfólio");
+opcoes.Add("0 - Sair");
 
 while (true)
 {
     tela.PrepararTela("Project Portfolio Management");
+    opcao = tela.MostrarMenu(opcoes, 2, 2);
 
-    string opcao = tela.MostrarMenu(opcoes, 2, 3);
-
-    if (opcao == "ESC")
-        continue;
-
-    if (opcao == "0")
-        break;
-
-    else if (opcao == "1")
-        projetoCRUD.GetType().GetMethod("CadastrarProjeto", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
-
-    else if (opcao == "2")
-        projetoCRUD.GetType().GetMethod("ListarProjetos", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
-
-    else if (opcao == "3")
-        projetoCRUD.GetType().GetMethod("DashboardProjetos", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
-
-    else if (opcao == "4")
-        projetoCRUD.GetType().GetMethod("FechamentoFormal", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
-
-    else if (opcao == "5")
-        recursoCRUD.GetType().GetMethod("Cadastrar", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
-
-    else if (opcao == "6")
-        recursoCRUD.GetType().GetMethod("Alocar", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
-
-    else if (opcao == "7")
-        recursoCRUD.GetType().GetMethod("Balanco", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
-
-    else if (opcao == "8")
-        projetoCRUD.GetType().GetMethod("BalancoConsolidadoPortfolio")!.Invoke(projetoCRUD, null); // ✅ agora chama o método real
-
+    if (opcao == "0") break;
+    else if (opcao == "1") projetoCRUD.GetType().GetMethod("CadastrarProjeto", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
+    else if (opcao == "2") projetoCRUD.GetType().GetMethod("ListarProjetos", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
+    else if (opcao == "3") projetoCRUD.GetType().GetMethod("DashboardProjetos", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
+    else if (opcao == "4") projetoCRUD.GetType().GetMethod("FechamentoFormal", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(projetoCRUD, null);
+    else if (opcao == "5") recursoCRUD.GetType().GetMethod("Cadastrar", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
+    else if (opcao == "6") recursoCRUD.GetType().GetMethod("Alocar", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
+    else if (opcao == "7") recursoCRUD.GetType().GetMethod("Balanco", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(recursoCRUD, null);
+    else if (opcao == "8") BalancoConsolidadoPlaceholder();
     else
     {
         tela.MostrarMensagem("Opção inválida. Pressione uma tecla para continuar...");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 }
 
-//
-// ────────────────────────────────────────────────────────────────
-//     TELA DE LOGIN
-// ────────────────────────────────────────────────────────────────
-//
-static void MostrarLogin()
+// ===== Helpers locais =====
+void BalancoConsolidadoPlaceholder()
 {
-    const string USER = "admin";
-    const string PASS = "123";
-
-    int largura = 66;
-    string barra = new string('═', largura);
-
-    while (true)
-    {
-        Console.Clear();
-
-        Console.WriteLine("╔" + barra + "╗");
-        Console.WriteLine("║" + Centraliza("Project Portfolio Management", largura) + "║");
-        Console.WriteLine("║" + new string(' ', largura) + "║");
-
-        string msg = " Informe seu usuário e senha:";
-        Console.WriteLine("║" + msg + new string(' ', Math.Max(0, largura - msg.Length)) + "║");
-
-        Console.WriteLine("║" + new string(' ', largura) + "║");
-
-        string l1 = " Usuário: ";
-        Console.WriteLine("║" + l1 + new string(' ', Math.Max(0, largura - l1.Length)) + "║");
-
-        string l2 = " Senha:   ";
-        Console.WriteLine("║" + l2 + new string(' ', Math.Max(0, largura - l2.Length)) + "║");
-
-        string l3 = " Confirmar Dados? (S/N): ";
-        Console.WriteLine("║" + l3 + new string(' ', Math.Max(0, largura - l3.Length)) + "║");
-
-        Console.WriteLine("╚" + barra + "╝");
-
-        Console.SetCursorPosition(1 + l1.Length, 5);
-        string usuario = Console.ReadLine() ?? "";
-
-        Console.SetCursorPosition(1 + l2.Length, 6);
-        string senha = Console.ReadLine() ?? "";
-
-        Console.SetCursorPosition(1 + l3.Length, 7);
-        string conf = Console.ReadLine() ?? "N";
-
-        bool ok =
-            string.Equals(usuario.Trim(), USER, StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(senha.Trim(), PASS, StringComparison.Ordinal) &&
-            string.Equals(conf.Trim().ToUpper(), "S", StringComparison.Ordinal);
-
-        if (ok) return;
-
-        // caso erro, reapresenta login
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine("╔" + barra + "╗");
-            Console.WriteLine("║" + Centraliza("Project Portfolio Management", largura) + "║");
-            Console.WriteLine("║" + new string(' ', largura) + "║");
-
-            string e1 = " Usuário ou senha incorretos. Informe novamente:";
-            Console.WriteLine("║" + e1 + new string(' ', Math.Max(0, largura - e1.Length)) + "║");
-
-            Console.WriteLine("║" + new string(' ', largura) + "║");
-            Console.WriteLine("║" + l1 + new string(' ', Math.Max(0, largura - l1.Length)) + "║");
-            Console.WriteLine("║" + l2 + new string(' ', Math.Max(0, largura - l2.Length)) + "║");
-            Console.WriteLine("║" + l3 + new string(' ', Math.Max(0, largura - l3.Length)) + "║");
-            Console.WriteLine("╚" + barra + "╝");
-
-            Console.SetCursorPosition(1 + l1.Length, 5);
-            string u2 = Console.ReadLine() ?? "";
-
-            Console.SetCursorPosition(1 + l2.Length, 6);
-            string p2 = Console.ReadLine() ?? "";
-
-            Console.SetCursorPosition(1 + l3.Length, 7);
-            string c2 = Console.ReadLine() ?? "N";
-
-            bool ok2 =
-                string.Equals(u2.Trim(), USER, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(p2.Trim(), PASS, StringComparison.Ordinal) &&
-                string.Equals(c2.Trim().ToUpper(), "S", StringComparison.Ordinal);
-
-            if (ok2) return;
-        }
-    }
+    Console.Clear();
+    string barra = new string('═', 66);
+    Console.WriteLine("╔" + barra + "╗");
+    Console.WriteLine("║" + Centraliza("Balanço Consolidado do Portfólio", 66) + "║");
+    Console.WriteLine("║" + new string(' ', 66) + "║");
+    Console.WriteLine("║ Total de Projetos: ".PadRight(67) + "║");
+    Console.WriteLine("║ Projetos em Análise: ".PadRight(67) + "║");
+    Console.WriteLine("║ Projetos em Execução: ".PadRight(67) + "║");
+    Console.WriteLine("║ Projetos Encerrados: ".PadRight(67) + "║");
+    Console.WriteLine("║".PadRight(67) + "║");
+    Console.Write("║ Voltar (V): ".PadRight(67) + "║\n");
+    Console.WriteLine("╚" + barra + "╝");
+    Console.ReadLine();
 }
 
-//
-// ────────────────────────────────────────────────────────────────
-//     FUNÇÕES AUXILIARES DE INTERFACE
-// ────────────────────────────────────────────────────────────────
-//
-static string Centraliza(string texto, int largura)
+string Centraliza(string texto, int largura)
 {
     if (texto.Length > largura) texto = texto.Substring(0, largura);
     int pad = (largura - texto.Length) / 2;
