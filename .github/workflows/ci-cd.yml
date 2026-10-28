@@ -1,0 +1,52 @@
+
+name: CI-CD - Gestão de Portfólio
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Compilar projeto .NET
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restaurar dependências
+        run: dotnet restore gest-odeportf-lio.sln
+
+      - name: Compilar projeto
+        run: dotnet build gest-odeportf-lio.sln --configuration Release --no-restore
+
+  staging:
+    name: Validar ambiente de staging
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Confirmar validação de staging
+        run: echo "Build aprovado. Etapa de staging executada."
+
+  production:
+    name: Aprovar produção
+    needs: staging
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Confirmar liberação
+        run: echo "Aprovação de produção concluída."
