@@ -7,12 +7,4 @@
     <Nullable>disable</Nullable>
     <AssemblyName>GestaoDePortfolio</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Tela.cs" />
-    <Compile Include="Projeto.cs" />
-    <Compile Include="ProjetoCRUD.cs" />
-    <Compile Include="Recurso.cs" />
-    <Compile Include="RecursoCRUD.cs" />
-  </ItemGroup>
 </Project>
