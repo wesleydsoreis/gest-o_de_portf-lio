@@ -37,6 +37,9 @@ public class Projeto
 
     public void RecalcularScoreEAprovacao()
     {
+        if (this.orcamentoAprovado <= 0)
+            throw new ArgumentOutOfRangeException(nameof(this.orcamentoAprovado), "O orçamento aprovado deve ser maior que zero.");
+
         int roi10 = this.roi / 10; // normaliza ROI para base 0..10
         this.score = (this.alinhamento * 2) + (roi10 * 3) + (this.urgencia * 3) + (this.risco * 2);
         this.aprovacao = (this.score >= 70) ? "Apto" : "Não Apto";
