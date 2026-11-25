@@ -1,4 +1,5 @@
 
+
 name: CI-CD - Gestão de Portfólio
 
 on:
@@ -11,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Compilar projeto .NET
+    name: Compilar e testar projeto .NET
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +30,9 @@ jobs:
       - name: Compilar projeto
         run: dotnet build gest-odeportf-lio.sln --configuration Release --no-restore
 
+      - name: Executar testes automatizados
+        run: dotnet test Tests/GestaoDePortfolio.Tests.csproj --configuration Release
+
   staging:
     name: Validar ambiente de staging
     needs: build
@@ -38,7 +42,7 @@ jobs:
 
     steps:
       - name: Confirmar validação de staging
-        run: echo "Build aprovado. Etapa de staging executada."
+        run: echo "Build e testes aprovados. Etapa de staging executada."
 
   production:
     name: Aprovar produção
