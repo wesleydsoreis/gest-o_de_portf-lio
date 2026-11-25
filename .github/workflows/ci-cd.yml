@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Compilar projeto .NET
+    name: Compilar e testar projeto .NET
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +24,13 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restaurar dependências
-        run: dotnet restore gest-odeportf-lio.sln
+        run: dotnet restore Tests/Tests.csproj
 
       - name: Compilar projeto
-        run: dotnet build gest-odeportf-lio.sln --configuration Release --no-restore
+        run: dotnet build Tests/Tests.csproj --configuration Release --no-restore
+
+      - name: Executar testes automatizados
+        run: dotnet test Tests/Tests.csproj --configuration Release --no-build --verbosity normal
 
   staging:
     name: Validar ambiente de staging
